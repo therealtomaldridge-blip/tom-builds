@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tom Builds — Web Design for Local Businesses</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231847F0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='13' font-weight='700' fill='white' letter-spacing='-0.5'%3ETB%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Tom Builds creates fast, professional websites for local businesses in Greater Manchester." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F7F4;
+      --white: #ffffff;
+      --ink: #0E0E0E;
+      --ink-2: #2C2C2C;
+      --ink-3: #666;
+      --accent: #1847F0;
+      --accent-2: #E8EDFF;
+      --gold: #C9A84C;
+      --border: rgba(0,0,0,0.09);
+      --border-strong: rgba(0,0,0,0.16);
+      --shadow-sm: 0 1px 8px rgba(0,0,0,0.06);
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,0.13);
+      --r: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+
+    /* SCROLL BAR — hidden */
+    ::-webkit-scrollbar { width: 0; }
+    body { scrollbar-width: none; }
+
+    /* PROGRESS */
+    #progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 300; transition: width 0.1s; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1.2rem, 5vw, 4rem);
+      background: rgba(248,247,244,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: var(--shadow); }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo em { font-style: italic; color: var(--accent); }
+
+    .nav-links { display: flex; align-items: center; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-3);
+      font-size: 0.87rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .nav-cta {
+      background: var(--ink) !important;
+      color: var(--white) !important;
+      padding: 0.5rem 1.3rem;
+      border-radius: 6px;
+      font-size: 0.84rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--accent) !important; transform: translateY(-1px); }
+
+    /* BURGER */
+    .burger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px; height: 36px;
+      background: none; border: none;
+      cursor: pointer; padding: 4px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .burger:hover { background: var(--accent-2); }
+    .burger span {
+      display: block;
+      height: 2px; border-radius: 2px;
+      background: var(--ink);
+      transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+      transform-origin: center;
+    }
+    .burger span:nth-child(2) { width: 70%; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* MOBILE MENU DRAWER */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: rgba(248,247,244,0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem clamp(1.2rem,5vw,4rem) 1.5rem;
+      flex-direction: column;
+      gap: 0;
+      z-index: 190;
+      transform: translateY(-8px);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+    .mobile-menu a {
+      text-decoration: none;
+      color: var(--ink-2);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      display: block;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:last-child { border-bottom: none; margin-top: 0.5rem; }
+    .mobile-menu a:hover { color: var(--accent); }
+    .mobile-menu .mob-cta {
+      background: var(--accent);
+      color: white !important;
+      text-align: center;
+      padding: 0.85rem !important;
+      border-radius: 7px;
+      font-weight: 600 !important;
+      border: none !important;
+      margin-top: 0.4rem;
+    }
+    .mobile-menu .mob-cta:hover { background: #0f35c8 !important; }
+
+    /* SHARED */
+    section { padding: 5rem clamp(1.2rem, 5vw, 4rem); }
+    .section-inner { max-width: 1180px; margin: 0 auto; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.8rem;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 20px; height: 1.5px;
+      background: var(--accent);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+      color: var(--ink);
+      margin-bottom: 0.8rem;
+    }
+    h2 em { font-style: italic; color: var(--accent); }
+
+    .lead {
+      font-size: 1rem;
+      color: var(--ink-3);
+      max-width: 480px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 7rem clamp(1.2rem,5vw,4rem) 5rem;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero-left { position: relative; }
+
+    .hero-available {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: #E8F5EE; color: #1A7A45;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.35rem 0.85rem; border-radius: 100px;
+      margin-bottom: 1.4rem;
+      animation: fadeUp 0.5s ease both 0.05s;
+    }
+    .hero-available::before { content: ''; width: 6px; height: 6px; background: #22C55E; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+
+    #hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.4rem);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.4rem;
+      animation: fadeUp 0.7s ease both 0.2s;
+    }
+    #hero h1 em { font-style: italic; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--ink-2);
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 440px;
+      margin-bottom: 2.2rem;
+      animation: fadeUp 0.7s ease both 0.35s;
+    }
+
+    .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; animation: fadeUp 0.7s ease both 0.5s; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+      padding: 0.85rem 2rem;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(24,71,240,0.3);
+    }
+    .btn-primary:hover { background: #0f35c8; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(24,71,240,0.35); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      padding: 0.85rem 2rem;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border: 1.5px solid var(--border-strong);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 2.5rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+      animation: fadeUp 0.7s ease both 0.65s;
+    }
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem; font-weight: 600;
+      color: var(--ink); line-height: 1;
+      margin-bottom: 0.15rem;
+    }
+    .hero-stat-label { font-size: 0.78rem; color: var(--ink-3); font-weight: 400; }
+
+    /* Hero right — visual card */
+    .hero-right { position: relative; animation: fadeUp 0.8s ease both 0.3s; }
+
+    .hero-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hc-header {
+      background: var(--ink);
+      padding: 0.9rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .hc-dots { display: flex; gap: 5px; }
+    .hc-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .hc-dot.r{background:#ff5f57} .hc-dot.y{background:#febc2e} .hc-dot.g{background:#28c840}
+    .hc-url {
+      font-size: 0.7rem; color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.07);
+      padding: 0.25rem 0.8rem; border-radius: 100px;
+      font-family: monospace;
+    }
+
+    .hc-body { padding: 1.4rem; background: #0A0A0A; }
+
+    .hc-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.2rem; padding-bottom: 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .hc-brand { font-size: 0.75rem; font-weight: 700; color: white; letter-spacing: 0.06em; text-transform: uppercase; }
+    .hc-nav-links { display: flex; gap: 10px; }
+    .hc-nav-link { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); }
+    .hc-nav-link:first-child { width: 24px; background: var(--accent); }
+    .hc-nav-link { width: 20px; }
+
+    .hc-hero-area { padding: 0.8rem 0 1rem; }
+    .hc-badge {
+      display: inline-block;
+      background: rgba(24,71,240,0.2); color: #6B9BFF;
+      font-size: 0.55rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 100px; margin-bottom: 8px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .hc-h1 { height: 11px; width: 88%; background: white; border-radius: 3px; margin-bottom: 5px; }
+    .hc-h2 { height: 8px; width: 65%; background: rgba(255,255,255,0.3); border-radius: 3px; margin-bottom: 14px; }
+    .hc-btns { display: flex; gap: 6px; }
+    .hc-btn { height: 16px; width: 60px; border-radius: 5px; background: var(--accent); }
+    .hc-btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.2); }
+
+    .hc-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0.6rem; margin-top: 1.2rem;
+    }
+    .hc-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 7px; padding: 0.6rem;
+    }
+    .hc-stat-n { height: 10px; width: 60%; background: rgba(24,71,240,0.6); border-radius: 3px; margin-bottom: 4px; }
+    .hc-stat-l { height: 6px; width: 80%; background: rgba(255,255,255,0.12); border-radius: 3px; }
+
+    .hero-badge {
+      position: absolute;
+      bottom: -1rem; left: -1.4rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 0.7rem;
+      animation: badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) both 0.9s;
+    }
+    .hero-badge-icon {
+      width: 34px; height: 34px;
+      background: var(--accent-2);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+    }
+    .hero-badge strong { display: block; font-size: 0.85rem; font-weight: 600; }
+    .hero-badge span { font-size: 0.75rem; color: var(--ink-3); }
+
+    /* ── CLIENTS STRIP ── */
+    #clients {
+      background: var(--white);
+      padding: 1.6rem clamp(1.2rem,5vw,4rem);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .clients-inner {
+      max-width: 1180px; margin: 0 auto;
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+    }
+    .clients-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+    .clients-divider { width: 1px; height: 20px; background: var(--border); }
+    .clients-logos { display: flex; gap: 2.2rem; flex-wrap: wrap; align-items: center; }
+    .client-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--ink-3);
+      letter-spacing: -0.01em;
+      opacity: 0.55;
+      transition: opacity 0.2s;
+    }
+    .client-logo:hover { opacity: 1; }
+
+    /* ── SERVICES ── */
+    #services { background: var(--bg); }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; gap: 2rem; flex-wrap: wrap; }
+    .services-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .service-card {
+      background: var(--white);
+      padding: 1.8rem 1.6rem;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .service-card:hover { background: #FAFBFF; }
+    .service-card:hover .service-num { color: var(--accent); }
+    .service-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--border-strong);
+      margin-bottom: 1rem;
+      transition: color 0.2s;
+    }
+    .service-icon {
+      width: 40px; height: 40px;
+      background: var(--accent-2);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      transition: transform 0.25s;
+    }
+    .service-card:hover .service-icon { transform: scale(1.08); }
+    .service-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.45rem; color: var(--ink); }
+    .service-card p { font-size: 0.85rem; color: var(--ink-3); line-height: 1.6; }
+
+    /* ── ABOUT ── */
+    #about { background: var(--ink); }
+    .about-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; max-width: 720px; }
+    .about-img-wrap { position: relative; }
+    .about-img {
+      width: 100%; aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #1a1a1a, #222);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .about-img::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(24,71,240,0.12), transparent 60%);
+    }
+    .about-img svg { opacity: 0.2; }
+    .about-pill {
+      position: absolute; bottom: -1rem; right: -1rem;
+      background: var(--accent);
+      color: white; border-radius: 10px;
+      padding: 0.9rem 1.3rem;
+      box-shadow: 0 8px 28px rgba(24,71,240,0.45);
+    }
+    .about-pill strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.8rem; line-height: 1; }
+    .about-pill span { font-size: 0.72rem; opacity: 0.8; }
+
+    .about-content .eyebrow { color: rgba(255,255,255,0.4); }
+    .about-content .eyebrow::before { background: rgba(255,255,255,0.4); }
+    .about-content h2 { color: var(--white); margin-bottom: 1rem; }
+    .about-content h2 em { color: #7fa8ff; }
+    .about-p { font-size: 0.95rem; color: rgba(255,255,255,0.55); line-height: 1.75; margin-bottom: 0.9rem; }
+    .about-p.lead-p { color: rgba(255,255,255,0.8); font-size: 1rem; }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.4rem; }
+    .tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+      padding: 0.3rem 0.9rem; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tag:hover { background: rgba(24,71,240,0.2); border-color: rgba(24,71,240,0.4); color: #a0bdff; }
+
+    /* ── WHY ── */
+    #why { background: var(--white); }
+    .why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 2.5rem; }
+    .why-card {
+      padding: 1.6rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      transition: border-color 0.2s, transform 0.25s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.25s;
+    }
+    .why-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--shadow); }
+    .why-card:hover .why-icon { background: var(--accent); color: white; }
+    .why-icon {
+      width: 40px; height: 40px;
+      background: var(--accent-2);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .why-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; }
+    .why-card p { font-size: 0.83rem; color: var(--ink-3); line-height: 1.6; }
+
+    /* ── PORTFOLIO ── */
+    #portfolio { background: var(--bg); }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.2rem; margin-top: 2.5rem; }
+    .portfolio-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: transform 0.28s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.28s, border-color 0.2s;
+    }
+    .portfolio-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: rgba(24,71,240,0.2); }
+
+    .swish-thumb {
+      height: 190px; background: #080808;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .swish-thumb::before {
+      content: '';
+      position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(24,71,240,0.12) 0%, transparent 70%);
+    }
+    .swish-mockup {
+      width: 80%; background: #111;
+      border-radius: 9px; overflow: hidden;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .swish-bar { background: #0A0A0A; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .swish-wordmark { font-size: 7px; font-weight: 800; color: white; letter-spacing: 0.1em; text-transform: uppercase; }
+    .swish-pills { display: flex; gap: 5px; }
+    .swish-pill { width: 16px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.12); }
+    .swish-pill.on { background: #3DD068; }
+    .swish-content { background: #0A0A0A; padding: 12px 10px; }
+    .swish-tag { display: inline-block; background: rgba(61,208,104,0.12); color: #3DD068; font-size: 5px; font-weight: 700; padding: 2px 6px; border-radius: 100px; margin-bottom: 7px; letter-spacing: 0.05em; }
+    .swish-h1 { height: 9px; width: 85%; background: white; border-radius: 3px; margin-bottom: 4px; }
+    .swish-h2 { height: 7px; width: 58%; background: rgba(255,255,255,0.25); border-radius: 3px; margin-bottom: 10px; }
+    .swish-ctas { display: flex; gap: 5px; }
+    .swish-cta { height: 13px; width: 50px; border-radius: 4px; background: #3DD068; }
+    .swish-cta.g { background: transparent; border: 1px solid rgba(255,255,255,0.15); }
+
+    .p-thumb {
+      height: 190px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .p-thumb.a { background: linear-gradient(135deg, #fff9f0, #ffecd4); }
+    .p-thumb.b { background: linear-gradient(135deg, var(--accent-2), #d4e0ff); }
+    .p-thumb.c { background: linear-gradient(135deg, #0d1117, #161b27); }
+
+    .p-browser { width: 76%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
+    .p-bar { background: #f0f0f0; padding: 5px 8px; display: flex; gap: 3px; align-items: center; }
+    .p-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .pd-r{background:#ff5f57} .pd-y{background:#febc2e} .pd-g{background:#28c840}
+    .p-content { padding: 9px; display: flex; flex-direction: column; gap: 4px; }
+    .p-line { height: 6px; border-radius: 3px; background: #e4e4e4; }
+    .p-line.hi{background:var(--accent);width:42%} .p-line.md{width:68%} .p-line.sm{width:46%}
+
+    .p-info { padding: 1.1rem 1.2rem; }
+    .p-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
+    .p-info h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--ink); }
+    .p-info p { font-size: 0.82rem; color: var(--ink-3); line-height: 1.55; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { background: var(--white); }
+    .t-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 2.5rem; }
+    .t-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+      transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.25s, border-color 0.2s;
+    }
+    .t-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: rgba(24,71,240,0.15); }
+    .t-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+    .t-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-style: italic;
+      color: var(--ink-2); line-height: 1.65;
+      margin-bottom: 1.2rem;
+    }
+    .t-author { display: flex; align-items: center; gap: 0.7rem; }
+    .t-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent-2);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.78rem; color: var(--accent);
+      flex-shrink: 0;
+    }
+    .t-name { font-weight: 600; font-size: 0.86rem; color: var(--ink); }
+    .t-biz { font-size: 0.75rem; color: var(--ink-3); }
+
+    /* ── PRICING ── */
+    #pricing { background: var(--bg); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 2.5rem; align-items: start; }
+    .p-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem 1.7rem;
+      transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.25s;
+    }
+    .p-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+    .p-card.featured {
+      background: var(--ink);
+      border-color: var(--ink);
+      transform: scale(1.03);
+    }
+    .p-card.featured:hover { transform: scale(1.03) translateY(-5px); }
+
+    .p-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: var(--accent); color: white;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      padding: 0.28rem 0.75rem; border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+    .p-badge::before { content: '★'; font-size: 0.6rem; }
+
+    .p-card h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--ink); }
+    .p-card.featured h3 { color: white; }
+    .p-desc { font-size: 0.83rem; color: var(--ink-3); margin-bottom: 1.2rem; line-height: 1.55; }
+    .p-card.featured .p-desc { color: rgba(255,255,255,0.5); }
+
+    .was-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.1rem; }
+    .was-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #D04545; }
+    .p-card.featured .was-label { color: #ff9090; }
+    .was-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--ink-3);
+      text-decoration: line-through;
+      text-decoration-color: #D04545;
+      text-decoration-thickness: 1.5px;
+    }
+    .p-card.featured .was-price { color: rgba(255,255,255,0.3); text-decoration-color: #ff9090; }
+
+    .p-price { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 600; line-height: 1; color: var(--ink); margin-bottom: 0.15rem; }
+    .p-card.featured .p-price { color: white; }
+    .p-sub { font-size: 0.75rem; color: var(--ink-3); margin-bottom: 1.6rem; }
+    .p-card.featured .p-sub { color: rgba(255,255,255,0.4); }
+
+    .p-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
+    .p-card.featured .p-divider { background: rgba(255,255,255,0.1); }
+
+    .p-features { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.6rem; }
+    .p-features li { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--ink-2); }
+    .p-card.featured .p-features li { color: rgba(255,255,255,0.75); }
+    .p-features li::before {
+      content: '';
+      width: 16px; height: 16px; flex-shrink: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23E8EDFF'/%3E%3Cpath d='M5 8l2 2 4-4' stroke='%231847F0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .p-card.featured .p-features li::before {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8' fill='rgba(24,71,240,0.3)'/%3E%3Cpath d='M5 8l2 2 4-4' stroke='%237aacff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    .btn-price {
+      display: block; text-align: center;
+      padding: 0.8rem; border-radius: 7px;
+      font-weight: 600; font-size: 0.87rem;
+      text-decoration: none; letter-spacing: 0.01em;
+      border: 1.5px solid var(--border-strong);
+      color: var(--ink);
+      transition: all 0.2s;
+    }
+    .btn-price:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-1px); }
+    .btn-price.inv { background: white; color: var(--ink); border-color: white; }
+    .btn-price.inv:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--white); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 4rem; align-items: start; }
+    .contact-left h2 { margin-bottom: 0.8rem; }
+    .contact-left > p { font-size: 0.93rem; color: var(--ink-3); line-height: 1.7; margin-bottom: 2rem; font-weight: 300; }
+    .c-items { display: flex; flex-direction: column; gap: 0.9rem; }
+    .c-item { display: flex; align-items: center; gap: 0.9rem; }
+    .c-icon {
+      width: 38px; height: 38px;
+      background: var(--accent-2); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .c-item:hover .c-icon { background: var(--accent); color: white; }
+    .c-item strong { display: block; font-size: 0.82rem; font-weight: 600; }
+    .c-item span { font-size: 0.82rem; color: var(--ink-3); }
+
+    .c-form { display: flex; flex-direction: column; gap: 1rem; }
+    .c-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+    .c-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .c-group label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em; color: var(--ink-2); }
+    .c-group input, .c-group textarea, .c-group select {
+      width: 100%; padding: 0.75rem 0.95rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem; color: var(--ink);
+      background: var(--bg); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .c-group input:focus, .c-group textarea:focus, .c-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(24,71,240,0.08);
+    }
+    .c-group textarea { resize: vertical; min-height: 100px; }
+    .btn-send {
+      background: var(--accent); color: white;
+      padding: 0.9rem 2rem; border-radius: 7px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      border: none; cursor: pointer; width: 100%;
+      box-shadow: 0 4px 16px rgba(24,71,240,0.28);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .btn-send:hover { background: #0f35c8; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(24,71,240,0.35); }
+    .btn-send:active { transform: scale(0.97); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      padding: 2rem clamp(1.2rem,5vw,4rem);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 600;
+      color: white; text-decoration: none;
+    }
+    .footer-logo em { font-style: italic; color: #7aacff; }
+    footer p { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeUp    { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes badgePop  { 0%{opacity:0;transform:scale(0.75) translateY(8px)} 70%{transform:scale(1.05)} 100%{opacity:1;transform:scale(1)} }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { transition: opacity 0.35s ease, transform 0.35s ease; }
+    .reveal.hidden { opacity: 0; transform: translateY(16px); }
+    .reveal.hidden.in { opacity: 1; transform: translateY(0); }
+    .d1{transition-delay:.03s} .d2{transition-delay:.08s} .d3{transition-delay:.13s}
+    .d4{transition-delay:.18s} .d5{transition-delay:.23s} .d6{transition-delay:.28s}
+
+    /* ── PORTFOLIO MOCKUPS ── */
+    /* Fitness site mockup (Swish Athletic anonymous) */
+    .mock-fitness {
+      height: 200px; background: #0A0A0A;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .mock-fitness::before {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(61,208,104,0.12) 0%, transparent 70%);
+    }
+    .mock-fitness-inner {
+      width: 82%; background: #111; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative; z-index: 1;
+    }
+    .mf-nav {
+      background: #0A0A0A; padding: 7px 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .mf-logo { font-size: 7px; font-weight: 900; color: #3DD068; letter-spacing: 0.12em; text-transform: uppercase; }
+    .mf-links { display: flex; gap: 5px; }
+    .mf-link { width: 18px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.12); }
+    .mf-hero { background: #0A0A0A; padding: 10px 10px 8px; }
+    .mf-tag { display: inline-block; background: rgba(61,208,104,0.12); color: #3DD068; font-size: 5px; font-weight: 700; padding: 2px 6px; border-radius: 100px; margin-bottom: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .mf-h1 { height: 9px; width: 88%; background: white; border-radius: 3px; margin-bottom: 4px; }
+    .mf-h2 { height: 6px; width: 62%; background: rgba(255,255,255,0.25); border-radius: 3px; margin-bottom: 10px; }
+    .mf-btns { display: flex; gap: 5px; }
+    .mf-btn { height: 13px; width: 52px; border-radius: 4px; background: #3DD068; }
+    .mf-btn.o { background: transparent; border: 1px solid rgba(61,208,104,0.4); }
+    .mf-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; padding: 7px 10px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.04); }
+    .mf-stat { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 5px; }
+    .mf-stat-n { height: 8px; width: 55%; background: rgba(61,208,104,0.5); border-radius: 2px; margin-bottom: 3px; }
+    .mf-stat-l { height: 5px; width: 80%; background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    /* Cocktail bar mockup (Brambles anonymous) */
+    .mock-bar {
+      height: 200px; background: #0f1a0e;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .mock-bar::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212,139,58,0.08) 0%, transparent 65%);
+    }
+    .mock-bar-inner {
+      width: 82%; background: #1a2e18; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+      border: 1px solid rgba(212,139,58,0.12);
+      position: relative; z-index: 1;
+    }
+    .mb-nav {
+      background: rgba(15,26,14,0.95); padding: 7px 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(212,139,58,0.1);
+    }
+    .mb-logo { font-size: 7px; font-weight: 500; color: #d48b3a; letter-spacing: 0.18em; text-transform: uppercase; }
+    .mb-links { display: flex; gap: 5px; }
+    .mb-link { width: 18px; height: 3px; border-radius: 2px; background: rgba(232,221,208,0.15); }
+    .mb-hero { background: #0f1a0e; padding: 10px 10px 8px; text-align: center; }
+    .mb-tag { display: inline-block; background: rgba(212,139,58,0.12); color: #d48b3a; font-size: 5px; font-weight: 600; padding: 2px 7px; border-radius: 100px; margin-bottom: 6px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .mb-h1 { height: 9px; width: 75%; background: #f5ede0; border-radius: 3px; margin: 0 auto 4px; }
+    .mb-h2 { height: 6px; width: 55%; background: rgba(232,221,208,0.2); border-radius: 3px; margin: 0 auto 10px; }
+    .mb-divider { height: 1px; background: rgba(212,139,58,0.2); margin: 0 10px 8px; }
+    .mb-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; padding: 0 10px 10px; }
+    .mb-card { background: rgba(26,46,24,0.8); border: 1px solid rgba(212,139,58,0.1); border-radius: 4px; padding: 5px; }
+    .mb-card-img { height: 20px; background: linear-gradient(135deg, rgba(212,139,58,0.2), rgba(212,139,58,0.05)); border-radius: 3px; margin-bottom: 3px; }
+    .mb-card-l { height: 5px; width: 70%; background: rgba(232,221,208,0.15); border-radius: 2px; margin-bottom: 2px; }
+    .mb-card-l.s { width: 50%; background: rgba(212,139,58,0.3); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1000px) { .why-grid{grid-template-columns:1fr 1fr} }
+    @media (max-width: 860px) {
+      #hero { grid-template-columns: 1fr; padding-top: 6rem; }
+      .hero-right { display: none; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .t-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .p-card.featured { transform: none; }
+      .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-img-wrap { display: none; }
+      .nav-links { display: none; }
+      .burger { display: flex; }
+      .mobile-menu { display: flex; }
+    }
+    @media (max-width: 560px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr 1fr; }
+      .c-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress"></div>
+
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">Tom<em>.</em>Builds</a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#portfolio">Work</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+    </ul>
+    <button class="burger" id="burger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#services" class="mob-link">Services</a>
+    <a href="#about" class="mob-link">About</a>
+    <a href="#portfolio" class="mob-link">Work</a>
+    <a href="#pricing" class="mob-link">Pricing</a>
+    <a href="#contact" class="mob-cta">Get in Touch</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-available">Currently taking on clients</div>
+      <h1>Websites that<br><em>actually</em> win<br>customers</h1>
+      <p class="hero-sub">Fast, professional, and built specifically for your business — live in days, not months. No agencies, no templates, no nonsense.</p>
+      <div class="hero-actions">
+        <a href="#portfolio" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          See My Work
+        </a>
+        <a href="#contact" class="btn-outline">
+          Get a Free Quote
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num"><span class="counter" data-target="7" data-suffix="days">0</span></div>
+          <div class="hero-stat-label">Average turnaround</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">AI</div>
+          <div class="hero-stat-label">Optimized</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">GM</div>
+          <div class="hero-stat-label">Greater Manchester</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hc-header">
+          <div class="hc-dots">
+            <span class="hc-dot r"></span>
+            <span class="hc-dot y"></span>
+            <span class="hc-dot g"></span>
+          </div>
+          <div class="hc-url">tombuilds.co.uk</div>
+          <div style="width:50px"></div>
+        </div>
+        <div class="hc-body">
+          <div class="hc-nav">
+            <div class="hc-brand">Tom Builds</div>
+            <div class="hc-nav-links">
+              <div class="hc-nav-link" style="width:28px;background:var(--accent)"></div>
+              <div class="hc-nav-link" style="width:22px"></div>
+              <div class="hc-nav-link" style="width:22px"></div>
+              <div class="hc-nav-link" style="width:22px"></div>
+            </div>
+          </div>
+          <div class="hc-hero-area">
+            <div class="hc-badge">Web Design · Greater Manchester</div>
+            <div class="hc-h1"></div>
+            <div class="hc-h2"></div>
+            <div class="hc-btns">
+              <div class="hc-btn"></div>
+              <div class="hc-btn ghost"></div>
+            </div>
+          </div>
+          <div class="hc-stats">
+            <div class="hc-stat"><div class="hc-stat-n"></div><div class="hc-stat-l"></div></div>
+            <div class="hc-stat"><div class="hc-stat-n" style="background:rgba(201,168,76,0.5)"></div><div class="hc-stat-l"></div></div>
+            <div class="hc-stat"><div class="hc-stat-n" style="background:rgba(34,197,94,0.4)"></div><div class="hc-stat-l"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <strong>Live in 7 days</strong>
+          <span>Fast turnaround, guaranteed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <div id="clients">
+    <div class="clients-inner">
+      <span class="clients-label">Trusted by</span>
+      <div class="clients-divider"></div>
+      <div class="clients-logos">
+        <span class="client-logo">Your Business</span>
+        <span class="client-logo">Could Be Here</span>
+        <span class="client-logo">Get In Touch</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">What I Do</div>
+          <h2>Everything your business<br>needs online</h2>
+        </div>
+        <p class="lead">From a simple one-section site to a full multi-section build, I handle design, code, and ongoing support.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal hidden d1">
+          <div class="service-num">01</div>
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20M2 12h20M12 2c-2.8 3-4 6-4 10s1.2 7 4 10"/></svg></div>
+          <h3>Custom Web Design</h3>
+          <p>No templates. Every site is built from scratch, designed specifically for your brand and customers.</p>
+        </div>
+        <div class="service-card reveal hidden d2">
+          <div class="service-num">02</div>
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <h3>Fast &amp; Mobile-Ready</h3>
+          <p>Loads instantly and looks perfect on every device. Speed matters — for users and for Google rankings.</p>
+        </div>
+        <div class="service-card reveal hidden d3">
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+          <div class="service-num">03</div>
+          <h3>SEO Foundations</h3>
+          <p>Built with search engines in mind — proper structure, meta tags, and local SEO so customers find you.</p>
+        </div>
+        <div class="service-card reveal hidden d4">
+          <div class="service-num">04</div>
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <h3>Lead Forms</h3>
+          <p>Working enquiry forms straight to your inbox — customers can reach you 24/7 even when you're busy.</p>
+        </div>
+        <div class="service-card reveal hidden d5">
+          <div class="service-num">05</div>
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3>Monthly Maintenance</h3>
+          <p>Optional retainer to keep your site updated, secure, and performing. Peace of mind, flat monthly fee.</p>
+        </div>
+        <div class="service-card reveal hidden d6">
+          <div class="service-num">06</div>
+          <div class="service-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <h3>Ongoing Updates</h3>
+          <p>New section, refreshed copy, updated prices — I'm one message away and always fast to turn around.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="about-content reveal hidden">
+          <div class="eyebrow">About Me</div>
+          <h2>A local lad who<br><em>gets it done</em></h2>
+          <p class="about-p lead-p">I'm Tom — a young web designer from Ramsbottom, Greater Manchester. I build websites for local businesses that want to look professional online without paying agency prices.</p>
+          <p class="about-p">I spotted a gap — so many brilliant local businesses have no online presence, or an outdated site costing them customers. I fix that. Every site I build is built from scratch and designed to actually generate enquiries.</p>
+          <p class="about-p">Being young isn't a drawback — it means I'm current, I move fast, and I don't carry the overhead of a big agency. You get quality work, direct communication, and prices that make sense for a small business.</p>
+          <div class="tag-row">
+            <span class="tag">Ramsbottom, GM</span>
+            <span class="tag">Fast turnaround</span>
+            <span class="tag">Direct line to me</span>
+            <span class="tag">Results-focused</span>
+            <span class="tag">Local specialist</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Why Tom Builds</div>
+          <h2>Not your average<br>web designer</h2>
+        </div>
+        <p class="lead">Agencies charge thousands and take months. DIY builders look like everyone else. Here's the difference.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card reveal hidden d1">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h3>Talk directly to me</h3>
+          <p>No account managers, no handoffs. You message me and I reply — usually the same day.</p>
+        </div>
+        <div class="why-card reveal hidden d2">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <h3>Live in days, not months</h3>
+          <p>Most projects go from first conversation to live site within a week.</p>
+        </div>
+        <div class="why-card reveal hidden d3">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <h3>Honest pricing</h3>
+          <p>You know exactly what you're paying before we start. No surprises, ever.</p>
+        </div>
+        <div class="why-card reveal hidden d4">
+          <div class="why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <h3>Built for you</h3>
+          <p>Every site built from scratch — not a template with your logo dropped in.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Portfolio</div>
+          <h2>Recent work</h2>
+        </div>
+        <p class="lead">Sites built for local businesses across Greater Manchester.</p>
+      </div>
+      <div class="portfolio-grid">
+
+        <!-- Fitness coaching site (anonymous) -->
+        <div class="portfolio-card reveal hidden d1">
+          <div class="mock-fitness">
+            <div class="mock-fitness-inner">
+              <div class="mf-nav">
+                <div class="mf-logo">Performance Coach</div>
+                <div class="mf-links"><div class="mf-link"></div><div class="mf-link"></div><div class="mf-link"></div></div>
+              </div>
+              <div class="mf-hero">
+                <div class="mf-tag">Personal Training · Greater Manchester</div>
+                <div class="mf-h1"></div>
+                <div class="mf-h2"></div>
+                <div class="mf-btns"><div class="mf-btn"></div><div class="mf-btn o"></div></div>
+              </div>
+              <div class="mf-stats">
+                <div class="mf-stat"><div class="mf-stat-n"></div><div class="mf-stat-l"></div></div>
+                <div class="mf-stat"><div class="mf-stat-n"></div><div class="mf-stat-l"></div></div>
+                <div class="mf-stat"><div class="mf-stat-n"></div><div class="mf-stat-l"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="p-info">
+            <div class="p-tag">Fitness Coaching</div>
+            <h3>Performance Coach</h3>
+            <p>Single-page site for a personal trainer in Bury, GM. Dark theme, animated counters, service cards, and integrated contact form.</p>
+          </div>
+        </div>
+
+        <!-- Cocktail bar site (anonymous) -->
+        <div class="portfolio-card reveal hidden d2">
+          <div class="mock-bar">
+            <div class="mock-bar-inner">
+              <div class="mb-nav">
+                <div class="mb-logo">The Cocktail Bar</div>
+                <div class="mb-links"><div class="mb-link"></div><div class="mb-link"></div><div class="mb-link"></div></div>
+              </div>
+              <div class="mb-hero">
+                <div class="mb-tag">Cocktail Bar · Ramsbottom</div>
+                <div class="mb-h1"></div>
+                <div class="mb-h2"></div>
+                <div class="mb-divider"></div>
+                <div class="mb-cards">
+                  <div class="mb-card"><div class="mb-card-img"></div><div class="mb-card-l"></div><div class="mb-card-l s"></div></div>
+                  <div class="mb-card"><div class="mb-card-img"></div><div class="mb-card-l"></div><div class="mb-card-l s"></div></div>
+                  <div class="mb-card"><div class="mb-card-img"></div><div class="mb-card-l"></div><div class="mb-card-l s"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-info">
+            <div class="p-tag">Hospitality</div>
+            <h3>Cocktail Bar</h3>
+            <p>Premium site for a cocktail bar in Ramsbottom. Dark forest theme, amber accents, drinks menu, and opening hours.</p>
+          </div>
+        </div>
+
+        <!-- Placeholder 1 -->
+        <div class="portfolio-card reveal hidden d3">
+          <div class="p-thumb b">
+            <div class="p-browser">
+              <div class="p-bar"><span class="p-dot pd-r"></span><span class="p-dot pd-y"></span><span class="p-dot pd-g"></span></div>
+              <div class="p-content"><div class="p-line hi"></div><div class="p-line md"></div><div class="p-line sm"></div></div>
+            </div>
+          </div>
+          <div class="p-info">
+            <div class="p-tag">Coming Soon</div>
+            <h3>Next Project</h3>
+            <p>More work on the way. Get in touch to be featured here.</p>
+          </div>
+        </div>
+
+        <!-- Placeholder 2 -->
+        <div class="portfolio-card reveal hidden d4">
+          <div class="p-thumb c">
+            <div class="p-browser">
+              <div class="p-bar"><span class="p-dot pd-r"></span><span class="p-dot pd-y"></span><span class="p-dot pd-g"></span></div>
+              <div class="p-content"><div class="p-line hi"></div><div class="p-line md"></div><div class="p-line sm"></div></div>
+            </div>
+          </div>
+          <div class="p-info">
+            <div class="p-tag">Coming Soon</div>
+            <h3>Next Project</h3>
+            <p>Building the portfolio one client at a time. Get in touch to be next.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Pricing</div>
+          <h2>Simple, honest pricing</h2>
+        </div>
+        <p class="lead">No hidden fees, no surprise invoices. One-time build fee plus optional monthly support.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="p-card reveal hidden d1">
+          <h3>Starter</h3>
+          <p class="p-desc">Perfect for getting online quickly with a clean, professional one-section site.</p>
+          <div class="was-row"><span class="was-label">Was</span><span class="was-price">£399</span></div>
+          <div class="p-price">£249</div>
+          <div class="p-sub">one-time build fee</div>
+          <div class="p-divider"></div>
+          <ul class="p-features">
+            <li>Single section website</li>
+            <li>Mobile responsive</li>
+            <li>Contact form</li>
+            <li>SEO basics</li>
+            <li>1 round of revisions</li>
+          </ul>
+          <a href="#contact" class="btn-price">Get Started</a>
+        </div>
+        <div class="p-card featured reveal hidden d2">
+          <div class="p-badge">Most Popular</div>
+          <h3>Growth</h3>
+          <p class="p-desc">Multi-section site with everything a growing local business needs to stand out.</p>
+          <div class="was-row"><span class="was-label">Was</span><span class="was-price">£799</span></div>
+          <div class="p-price">£499</div>
+          <div class="p-sub">one-time build + £29/mo support</div>
+          <div class="p-divider"></div>
+          <ul class="p-features">
+            <li>Up to 5 sections</li>
+            <li>Custom design</li>
+            <li>Contact &amp; booking forms</li>
+            <li>Google Maps embed</li>
+            <li>Local SEO setup</li>
+            <li>Monthly updates</li>
+          </ul>
+          <a href="#contact" class="btn-price inv">Get Started</a>
+        </div>
+        <div class="p-card reveal hidden d3">
+          <h3>Custom</h3>
+          <p class="p-desc">Need something specific? I'll put together a tailored quote for your project.</p>
+          <div class="p-price">POA</div>
+          <div class="p-sub">based on your requirements</div>
+          <div class="p-divider"></div>
+          <ul class="p-features">
+            <li>Unlimited sections</li>
+            <li>E-commerce ready</li>
+            <li>Custom features</li>
+            <li>Priority support</li>
+            <li>Ongoing partnership</li>
+          </ul>
+          <a href="#contact" class="btn-price">Let's Talk</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div class="contact-left reveal hidden">
+          <div class="eyebrow">Get in Touch</div>
+          <h2>Let's build<br>something great</h2>
+          <p>Ready to get your business online? Drop me a message and I'll get back to you within 24 hours.</p>
+          <div class="c-items">
+            <div class="c-item">
+              <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div><strong>Based in</strong><span>Ramsbottom, Greater Manchester</span></div>
+            </div>
+            <div class="c-item">
+              <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <div><strong>Email</strong><span><a href="/cdn-cgi/l/email-protection#3b535e5757547b4f5456594e52575f48155854154e50" style="color:inherit;text-decoration:none"><span class="__cf_email__" data-cfemail="1e767b7272715e6a71737c6b77727a6d307d71306b75">[email&#160;protected]</span></a></span></div>
+            </div>
+            <div class="c-item">
+              <div class="c-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div><strong>Response time</strong><span>Within 24 hours</span></div>
+            </div>
+          </div>
+        </div>
+        <form class="c-form reveal hidden d2" name="contact" netlify netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact" />
+          <p style="display:none"><input name="bot-field" /></p>
+          <div class="c-row">
+            <div class="c-group"><label for="fname">Your Name</label><input type="text" id="fname" name="name" placeholder="John Smith" required /></div>
+            <div class="c-group"><label for="business">Business Name</label><input type="text" id="business" name="business" placeholder="Smith &amp; Co." /></div>
+          </div>
+          <div class="c-group"><label for="email">Email Address</label><input type="email" id="email" name="email" placeholder="john@example.com" required /></div>
+          <div class="c-group">
+            <label for="package">Interested in</label>
+            <select id="package" name="package">
+              <option value="">Select a package...</option>
+              <option>Starter — £249</option>
+              <option>Growth — £499</option>
+              <option>Custom / Not sure yet</option>
+            </select>
+          </div>
+          <div class="c-group"><label for="message">Tell me about your business</label><textarea id="message" name="message" placeholder="What do you do, who are your customers, and what do you want your website to achieve?"></textarea></div>
+          <button type="submit" class="btn-send">Send Message &rarr;</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="#hero" class="footer-logo">Tom<em>.</em>Builds</a>
+    <p>&copy; 2026 Tom Builds &mdash; Handcrafted websites for local businesses.</p>
+    <p>Ramsbottom, Greater Manchester</p>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Burger menu
+    const burger = document.getElementById('burger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    burger.addEventListener('click', () => {
+      const open = burger.classList.toggle('open');
+      mobileMenu.classList.toggle('open', open);
+    });
+    // Close on link click
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        burger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // Active nav
+    const secs = document.querySelectorAll('section[id]');
+    const links = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+    window.addEventListener('scroll', () => {
+      let cur = '';
+      secs.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    }, { passive: true });
+
+    // Scroll reveal
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+    // Counter animation
+    const counters = document.querySelectorAll('.counter');
+    const countObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = +el.dataset.target;
+        const suffix = el.dataset.suffix || '';
+        const duration = 1200;
+        const step = target / (duration / 16);
+        let current = 0;
+        const update = () => {
+          current = Math.min(current + step, target);
+          el.textContent = Math.floor(current) + suffix;
+          if (current < target) requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
+        countObserver.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => countObserver.observe(c));
+
+    // Form submission — show enquiry sent screen
+    const form = document.querySelector('.c-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const screen = document.getElementById('enquiry-sent');
+        screen.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form)).toString()
+        }).catch(() => {});
+      });
+    }
+
+    // Back to home button
+    const backBtn = document.getElementById('back-to-home');
+    if (backBtn) {
+      backBtn.addEventListener('click', function() {
+        const screen = document.getElementById('enquiry-sent');
+        screen.style.display = 'none';
+        document.body.style.overflow = '';
+        if (form) form.reset();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  </script>
+
+  <!-- ENQUIRY SENT SCREEN -->
+  <div id="enquiry-sent" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;">
+    <div style="background:white;border:1px solid rgba(0,0,0,0.09);border-radius:20px;padding:3rem 2.5rem;max-width:440px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,0.13);">
+      <div style="width:64px;height:64px;background:#E8F5EE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:0.7rem;color:#0E0E0E;">Enquiry Sent!</h2>
+      <p style="font-size:0.95rem;color:#666;line-height:1.7;margin-bottom:2rem;">Thanks for getting in touch. I'll get back to you within 24 hours.</p>
+      <button id="back-to-home" style="background:#1847F0;color:white;border:none;border-radius:7px;padding:0.85rem 2rem;font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;width:100%;box-shadow:0 4px 16px rgba(24,71,240,0.3);">Back to Home</button>
+    </div>
+  </div>
+
+</body>
+</html>
