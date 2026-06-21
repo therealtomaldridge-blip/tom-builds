@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Haircut</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231847F0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-size='15' fill='white'%3E%E2%9C%82%EF%B8%8E%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Book in for a haircut in a couple of taps." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F7F4;
+      --white: #ffffff;
+      --ink: #0E0E0E;
+      --ink-2: #2C2C2C;
+      --ink-3: #666;
+      --accent: #1847F0;
+      --accent-2: #E8EDFF;
+      --wa: #25D366;
+      --gold: #C9A84C;
+      --border: rgba(0,0,0,0.09);
+      --border-strong: rgba(0,0,0,0.16);
+      --shadow-sm: 0 1px 8px rgba(0,0,0,0.06);
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,0.13);
+      --r: 12px;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3rem) 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .head {
+      padding: clamp(1.6rem, 5vw, 2.4rem);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--accent-2), var(--white));
+    }
+    .head .eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .head h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: clamp(1.7rem, 6vw, 2.3rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .head p { color: var(--ink-3); margin-top: 0.5rem; font-size: 0.96rem; }
+
+    .body { padding: clamp(1.4rem, 5vw, 2.2rem); }
+
+    .field { margin-bottom: 1.7rem; }
+    .field > label.legend {
+      display: block;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.7rem;
+    }
+    .field .hint { color: var(--ink-3); font-weight: 400; font-size: 0.85rem; }
+
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--ink);
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(24,71,240,0.12);
+    }
+
+    /* Services */
+    .services { display: grid; gap: 0.6rem; }
+    .service {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .service:hover { border-color: var(--accent); }
+    .service.selected {
+      border-color: var(--accent);
+      background: var(--accent-2);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+    }
+    .service .meta { display: flex; flex-direction: column; }
+    .service .name { font-weight: 600; }
+    .service .desc { font-size: 0.82rem; color: var(--ink-3); }
+    .service .price { font-weight: 600; color: var(--accent); white-space: nowrap; }
+    .service input { position: absolute; opacity: 0; pointer-events: none; }
+
+    /* Time slots */
+    .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 0.55rem; }
+    .slot {
+      padding: 0.7rem 0.4rem;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.95rem;
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .slot:hover { border-color: var(--accent); }
+    .slot.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .submit {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1.05rem;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--wa);
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.05s;
+    }
+    .submit:hover { filter: brightness(0.96); }
+    .submit:active { transform: translateY(1px); }
+    .submit:disabled { background: #c8c8c8; cursor: not-allowed; filter: none; }
+    .submit svg { width: 22px; height: 22px; }
+
+    .error {
+      display: none;
+      color: #c0392b;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .error.show { display: block; }
+
+    .foot {
+      text-align: center;
+      color: var(--ink-3);
+      font-size: 0.82rem;
+      margin-top: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="head">
+      <div class="eyebrow">✂︎ Haircut Booking</div>
+      <h1>Book yourself in</h1>
+      <p>Pick what you want, choose a day and time, and tap to send it over on WhatsApp.</p>
+    </div>
+
+    <form class="body" id="form">
+      <div class="field">
+        <label class="legend" for="name">Your name</label>
+        <input type="text" id="name" placeholder="e.g. Jack" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label class="legend">What do you want? <span class="hint">— pick one or more</span></label>
+        <div class="services" id="services"></div>
+      </div>
+
+      <div class="field">
+        <label class="legend" for="date">Which day?</label>
+        <input type="date" id="date" />
+      </div>
+
+      <div class="field">
+        <label class="legend">What time?</label>
+        <div class="slots" id="slots"></div>
+      </div>
+
+      <p class="error" id="error"></p>
+
+      <button type="submit" class="submit" id="submit">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.821 11.821 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.207zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        Send booking on WhatsApp
+      </button>
+
+      <p class="foot">Opens WhatsApp with your booking ready to send. No app or sign-up needed.</p>
+    </form>
+  </main>
+
+  <script>
+    /* ============================================================
+       SETTINGS — edit these two lines
+       ============================================================ */
+    // Your WhatsApp number, country code first, digits only (no +, spaces or dashes).
+    // UK example: 07700 900123  ->  447700900123
+    const WHATSAPP_NUMBER = "REPLACE_WITH_YOUR_NUMBER";
+
+    // The services on offer. Add/remove/edit freely.
+    const SERVICES = [
+      { name: "Haircut",          desc: "Standard cut",        price: "£10" },
+      { name: "Skin fade",        desc: "Sharp faded sides",   price: "£12" },
+      { name: "Beard trim",       desc: "Shaped & tidied",     price: "£5"  },
+      { name: "Haircut + beard",  desc: "The full sort-out",   price: "£14" },
+    ];
+
+    // Time slots offered.
+    const TIME_SLOTS = ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"];
+    /* ============================================================ */
+
+    const state = { services: new Set(), time: null };
+
+    // Build services
+    const servicesEl = document.getElementById("services");
+    SERVICES.forEach((s, i) => {
+      const el = document.createElement("label");
+      el.className = "service";
+      el.innerHTML = `
+        <input type="checkbox" value="${s.name}" />
+        <span class="meta">
+          <span class="name">${s.name}</span>
+          <span class="desc">${s.desc}</span>
+        </span>
+        <span class="price">${s.price}</span>`;
+      const cb = el.querySelector("input");
+      el.addEventListener("click", (e) => {
+        if (e.target !== cb) cb.checked = !cb.checked;
+        el.classList.toggle("selected", cb.checked);
+        if (cb.checked) state.services.add(s.name); else state.services.delete(s.name);
+      });
+      servicesEl.appendChild(el);
+    });
+
+    // Date — default to today, no past dates
+    const dateEl = document.getElementById("date");
+    const today = new Date();
+    const iso = today.toISOString().split("T")[0];
+    dateEl.min = iso;
+    dateEl.value = iso;
+
+    // Build time slots
+    const slotsEl = document.getElementById("slots");
+    TIME_SLOTS.forEach((t) => {
+      const el = document.createElement("div");
+      el.className = "slot";
+      el.textContent = t;
+      el.addEventListener("click", () => {
+        slotsEl.querySelectorAll(".slot").forEach(s => s.classList.remove("selected"));
+        el.classList.add("selected");
+        state.time = t;
+      });
+      slotsEl.appendChild(el);
+    });
+
+    function prettyDate(isoStr) {
+      const d = new Date(isoStr + "T00:00:00");
+      return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    }
+
+    const errorEl = document.getElementById("error");
+    function showError(msg) { errorEl.textContent = msg; errorEl.classList.add("show"); }
+    function clearError() { errorEl.classList.remove("show"); }
+
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      clearError();
+
+      const name = document.getElementById("name").value.trim();
+      const chosen = [...state.services];
+
+      if (!name)            return showError("Please add your name.");
+      if (chosen.length === 0) return showError("Please pick at least one service.");
+      if (!dateEl.value)    return showError("Please choose a day.");
+      if (!state.time)      return showError("Please pick a time.");
+
+      if (WHATSAPP_NUMBER === "REPLACE_WITH_YOUR_NUMBER") {
+        return showError("Booking isn't set up yet — the WhatsApp number is missing.");
+      }
+
+      const msg =
+        `Hiya — I'd like to book a haircut 💈\n\n` +
+        `Name: ${name}\n` +
+        `Service: ${chosen.join(", ")}\n` +
+        `Day: ${prettyDate(dateEl.value)}\n` +
+        `Time: ${state.time}`;
+
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+    });
+  </script>
+</body>
+</html>
