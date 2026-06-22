@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Brainrot Tycoon 🦈✈️ — Collect, Earn, Steal!</title>
+<meta name="description" content="Brainrot Tycoon — collect viral Italian Brainrot characters, generate cash, and STEAL from rivals. A free idle tycoon game." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237C3AED'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='18'%3E%F0%9F%A6%88%3C/text%3E%3C/svg%3E" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#0c0118; --bg2:#160630; --panel:rgba(255,255,255,0.05); --panel-2:rgba(255,255,255,0.08);
+    --ink:#f4f0ff; --ink-2:#b9a8e0; --ink-3:#7c6aa0;
+    --accent:#a855f7; --accent-2:#ec4899; --gold:#fbbf24; --green:#34d399; --red:#f87171; --cyan:#22d3ee;
+    --border:rgba(168,85,247,0.25); --r:16px;
+    --common:#9ca3af; --rare:#38bdf8; --epic:#a855f7; --legendary:#fbbf24; --mythic:#f43f5e; --secret:#22d3ee;
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:radial-gradient(circle at 20% 0%,#2a0a52 0%,var(--bg) 55%) fixed;
+    color:var(--ink); line-height:1.4; overflow-x:hidden; user-select:none;
+    -webkit-user-select:none; touch-action:manipulation;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:14px 14px 90px;min-height:100%}
+
+  /* HEADER */
+  header{text-align:center;padding:6px 0 12px;position:relative}
+  .logo{font-size:clamp(1.6rem,7vw,2.6rem);font-weight:900;letter-spacing:-0.02em;line-height:1;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--gold));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 2px 12px rgba(168,85,247,0.4))}
+  .tag{font-size:0.78rem;color:var(--ink-3);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-top:2px}
+
+  /* CASH BAR */
+  .cashbar{
+    background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(236,72,153,0.12));
+    border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:8px 0 14px;
+    box-shadow:0 8px 30px rgba(124,58,237,0.18),inset 0 1px 0 rgba(255,255,255,0.06);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .cash{font-size:clamp(1.5rem,6.5vw,2.4rem);font-weight:900;color:var(--gold);line-height:1;
+    text-shadow:0 0 20px rgba(251,191,36,0.35);display:flex;align-items:center;gap:8px}
+  .cash small{font-size:0.55em;color:var(--ink-2);font-weight:700}
+  .rate{font-size:0.95rem;color:var(--green);font-weight:800}
+  .rate span{color:var(--ink-3);font-weight:600}
+
+  /* TAP ZONE */
+  .tapzone{display:flex;flex-direction:column;align-items:center;gap:10px;margin:6px 0 18px}
+  .tapbtn{
+    width:min(60vw,230px);height:min(60vw,230px);border-radius:50%;border:none;cursor:pointer;
+    background:radial-gradient(circle at 35% 30%,#c084fc,#7c3aed 60%,#4c1d95);
+    box-shadow:0 12px 40px rgba(124,58,237,0.5),inset 0 -8px 20px rgba(0,0,0,0.35),inset 0 6px 14px rgba(255,255,255,0.25);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;
+    font-weight:900;transition:transform 0.06s ease;position:relative;overflow:visible}
+  .tapbtn:active{transform:scale(0.94)}
+  .tapbtn .emoji{font-size:min(18vw,72px);filter:drop-shadow(0 4px 8px rgba(0,0,0,0.4));animation:bob 2.5s ease-in-out infinite}
+  .tapbtn .lbl{font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.85}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+  .tapper-name{font-weight:800;font-size:0.95rem;color:var(--ink-2)}
+
+  /* FLOATING NUMBERS */
+  .float{position:fixed;pointer-events:none;font-weight:900;font-size:1.1rem;color:var(--gold);
+    text-shadow:0 2px 6px rgba(0,0,0,0.6);z-index:120;animation:floatup 0.9s ease-out forwards}
+  @keyframes floatup{0%{opacity:1;transform:translate(-50%,0) scale(0.8)}
+    100%{opacity:0;transform:translate(-50%,-70px) scale(1.3)}}
+
+  /* TABS */
+  .tabs{display:flex;gap:6px;margin:4px 0 12px;background:var(--panel);padding:5px;border-radius:14px;border:1px solid var(--border)}
+  .tab{flex:1;padding:10px 4px;border:none;background:transparent;color:var(--ink-3);font-weight:800;
+    font-size:0.82rem;border-radius:10px;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .tab .ti{font-size:1.15rem}
+  .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
+    box-shadow:0 4px 14px rgba(168,85,247,0.4)}
+  .badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:0.6rem;
+    min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-weight:900}
+
+  .panel{display:none;animation:fade 0.25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* SHOP / COLLECTION CARDS */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px;
+    position:relative;overflow:hidden;transition:transform 0.12s,box-shadow 0.12s}
+  .card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--rar),transparent 60%);opacity:0.12;pointer-events:none}
+  .card.affordable{border-color:var(--rar);box-shadow:0 0 0 1px var(--rar),0 6px 20px rgba(0,0,0,0.3)}
+  .card .topline{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+  .rar-tag{font-size:0.6rem;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:var(--rar);
+    background:color-mix(in srgb,var(--rar) 18%,transparent);padding:2px 7px;border-radius:6px}
+  .owned-pill{font-size:0.65rem;font-weight:800;color:var(--ink-2);background:var(--panel-2);padding:2px 7px;border-radius:6px}
+  .card .face{font-size:2.6rem;text-align:center;margin:6px 0;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4))}
+  .card .nm{font-weight:800;font-size:0.86rem;text-align:center;line-height:1.15;min-height:2.3em;display:flex;align-items:center;justify-content:center}
+  .card .inc{font-size:0.72rem;color:var(--green);text-align:center;font-weight:700;margin-top:2px}
+  .buybtn{width:100%;margin-top:10px;padding:9px;border:none;border-radius:10px;font-weight:900;font-size:0.82rem;
+    cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;transition:filter 0.15s,opacity 0.15s}
+  .buybtn:active{filter:brightness(0.9)}
+  .buybtn:disabled{opacity:0.35;cursor:not-allowed;background:var(--panel-2);color:var(--ink-3)}
+  .card.locked .face,.card.locked .nm{filter:blur(5px) grayscale(1);opacity:0.5}
+  .lockmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-weight:900;color:var(--ink-2);font-size:0.8rem;text-align:center;gap:4px;z-index:2}
+
+  /* UPGRADE ROWS */
+  .uprow{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);
+    border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  .uprow .ui{font-size:1.8rem}
+  .uprow .um{flex:1;min-width:0}
+  .uprow .ut{font-weight:800;font-size:0.92rem}
+  .uprow .ud{font-size:0.74rem;color:var(--ink-2)}
+  .uprow .ulvl{font-size:0.7rem;color:var(--cyan);font-weight:800;margin-top:2px}
+
+  /* STEAL EVENT */
+  .overlay{position:fixed;inset:0;background:rgba(8,1,24,0.82);backdrop-filter:blur(6px);z-index:300;
+    display:none;align-items:center;justify-content:center;padding:20px;animation:fade 0.2s}
+  .overlay.show{display:flex}
+  .steal-card{background:linear-gradient(160deg,#2a0a52,#160630);border:2px solid var(--accent-2);
+    border-radius:22px;padding:24px;text-align:center;max-width:380px;width:100%;
+    box-shadow:0 0 60px rgba(236,72,153,0.4)}
+  .steal-card h2{font-size:1.5rem;font-weight:900;margin-bottom:4px;color:var(--accent-2)}
+  .steal-card .victim{font-size:3.5rem;margin:8px 0;animation:shake 0.4s ease infinite}
+  @keyframes shake{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  .steal-card p{color:var(--ink-2);font-size:0.9rem;margin-bottom:14px}
+  .steal-prog{height:14px;background:var(--panel-2);border-radius:8px;overflow:hidden;margin-bottom:16px}
+  .steal-prog .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--gold));transition:width 0.05s}
+  .bigbtn{width:100%;padding:16px;border:none;border-radius:14px;font-weight:900;font-size:1.05rem;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
+    box-shadow:0 8px 24px rgba(236,72,153,0.4);transition:transform 0.06s}
+  .bigbtn:active{transform:scale(0.97)}
+  .steal-timer{font-size:0.8rem;color:var(--ink-3);margin-top:10px;font-weight:700}
+
+  /* TOAST */
+  .toast-wrap{position:fixed;left:0;right:0;bottom:80px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:250;pointer-events:none}
+  .toast{background:rgba(22,6,48,0.96);border:1px solid var(--border);border-radius:12px;padding:10px 16px;
+    font-weight:700;font-size:0.85rem;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:toastin 0.3s ease;max-width:90vw}
+  .toast.good{border-color:var(--green);color:var(--green)}
+  .toast.bad{border-color:var(--red);color:var(--red)}
+  .toast.info{border-color:var(--cyan);color:var(--cyan)}
+  @keyframes toastin{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+  /* STEAL FAB */
+  .steal-fab{position:fixed;right:14px;bottom:84px;z-index:140;background:linear-gradient(135deg,var(--red),var(--accent-2));
+    border:none;color:#fff;font-weight:900;border-radius:50px;padding:14px 18px;font-size:0.9rem;cursor:pointer;
+    box-shadow:0 8px 28px rgba(244,114,114,0.5);display:none;align-items:center;gap:6px;animation:pulse 1s infinite}
+  .steal-fab.show{display:flex}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+  /* SECTION HEAD */
+  .shead{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px}
+  .shead h3{font-size:1.05rem;font-weight:900}
+  .shead .sub{font-size:0.72rem;color:var(--ink-3);font-weight:700}
+
+  /* REBIRTH */
+  .rebirth-box{background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(236,72,153,0.1));
+    border:1px solid var(--gold);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:14px}
+  .rebirth-box h3{color:var(--gold);font-size:1.2rem;font-weight:900}
+  .rebirth-box p{color:var(--ink-2);font-size:0.85rem;margin:8px 0}
+  .rebirth-box .gain{font-size:1.6rem;font-weight:900;color:var(--green);margin:6px 0}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px}
+  .stat .sv{font-size:1.1rem;font-weight:900;color:var(--ink)}
+  .stat .sl{font-size:0.68rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+
+  .ghost{background:var(--panel);border:1px solid var(--border);color:var(--ink-2);padding:10px 14px;
+    border-radius:10px;font-weight:700;font-size:0.8rem;cursor:pointer}
+  .footer{text-align:center;color:var(--ink-3);font-size:0.72rem;margin-top:18px;line-height:1.7}
+  .footer a{color:var(--accent)}
+  .help{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;font-size:0.82rem;color:var(--ink-2);margin-bottom:14px}
+  .help b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">BRAINROT TYCOON</div>
+    <div class="tag">Collect · Earn · STEAL 🦈✈️</div>
+  </header>
+
+  <div class="cashbar">
+    <div class="cash">💰 <span id="cash">0</span><small id="cashUnit"></small></div>
+    <div class="rate"><span id="cashEmoji">📈</span> <span id="rate">0</span>/sec</div>
+  </div>
+
+  <div class="tapzone">
+    <button class="tapbtn" id="tapbtn">
+      <span class="emoji" id="tapEmoji">🦈</span>
+      <span class="lbl">TAP TO EARN</span>
+    </button>
+    <div class="tapper-name" id="tapperName">Tralalero Tralala</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="shop"><span class="ti">🛒</span>Shop</button>
+    <button class="tab" data-tab="collection"><span class="ti">📚</span>Collection</button>
+    <button class="tab" data-tab="upgrades" style="position:relative"><span class="ti">⚡</span>Upgrades<span class="badge" id="upBadge" style="display:none"></span></button>
+    <button class="tab" data-tab="rebirth"><span class="ti">🌀</span>Go Viral</button>
+  </div>
+
+  <!-- SHOP -->
+  <section class="panel active" id="panel-shop">
+    <div class="help">Buy <b>brainrots</b> — each one generates 💰 cash every second, even while you're away. Buy multiples to stack income. Rarer = richer.</div>
+    <div class="grid" id="shopGrid"></div>
+  </section>
+
+  <!-- COLLECTION -->
+  <section class="panel" id="panel-collection">
+    <div class="shead"><h3>Your Collection</h3><span class="sub" id="collCount">0 / 0</span></div>
+    <div class="grid" id="collGrid"></div>
+  </section>
+
+  <!-- UPGRADES -->
+  <section class="panel" id="panel-upgrades">
+    <div class="shead"><h3>Upgrades</h3><span class="sub">Permanent boosts</span></div>
+    <div id="upList"></div>
+  </section>
+
+  <!-- REBIRTH -->
+  <section class="panel" id="panel-rebirth">
+    <div class="rebirth-box">
+      <h3>🌀 GO VIRAL</h3>
+      <p>Reset your cash &amp; brainrots to gain permanent <b>🔥 Clout</b> that multiplies ALL future earnings forever.</p>
+      <div class="gain">+<span id="rbGain">0</span> 🔥 Clout</div>
+      <p style="font-size:0.75rem">Current bonus: <b id="rbCur">+0%</b> earnings · Need <b id="rbNeed">25K</b> total earned to reset</p>
+      <button class="bigbtn" id="rebirthBtn" style="max-width:260px;margin:0 auto">GO VIRAL 🚀</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="sv" id="stClout">0</div><div class="sl">🔥 Clout</div></div>
+      <div class="stat"><div class="sv" id="stTotal">0</div><div class="sl">Total Earned</div></div>
+      <div class="stat"><div class="sv" id="stTaps">0</div><div class="sl">Taps</div></div>
+      <div class="stat"><div class="sv" id="stSteals">0</div><div class="sl">Successful Steals</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:center">
+      <button class="ghost" id="saveBtn">💾 Save</button>
+      <button class="ghost" id="resetBtn">♻️ Hard Reset</button>
+    </div>
+    <div class="footer">
+      Brainrot Tycoon · a tiny idle game built for fun.<br/>
+      Auto-saves to this device. Tap the floating 🥷 STEAL button when it appears!
+    </div>
+  </section>
+</div>
+
+<!-- STEAL FAB -->
+<button class="steal-fab" id="stealFab">🥷 STEAL!</button>
+
+<!-- STEAL OVERLAY -->
+<div class="overlay" id="stealOverlay">
+  <div class="steal-card">
+    <h2 id="stealTitle">🥷 RAID!</h2>
+    <div class="victim" id="stealVictim">🦈</div>
+    <p id="stealDesc">Rival tycoon spotted! Tap fast to steal their stash before they escape!</p>
+    <div class="steal-prog"><div class="fill" id="stealFill"></div></div>
+    <button class="bigbtn" id="stealTap">TAP TO STEAL! 💰</button>
+    <div class="steal-timer" id="stealTimer">3.0s</div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+"use strict";
+
+/* ---------- DATA: the viral brainrot roster ---------- */
+const RAR = {
+  common:    {name:"Common",    mult:1,   color:"--common"},
+  rare:      {name:"Rare",      mult:1,   color:"--rare"},
+  epic:      {name:"Epic",      mult:1,   color:"--epic"},
+  legendary: {name:"Legendary", mult:1,   color:"--legendary"},
+  mythic:    {name:"Mythic",    mult:1,   color:"--mythic"},
+  secret:    {name:"Secret",    mult:1,   color:"--secret"},
+};
+
+// baseCost = first purchase price; baseInc = cash/sec per unit at lvl 1
+const ROSTER = [
+  {id:"tralalero",  name:"Tralalero Tralala",   emoji:"🦈",  rar:"common",    baseCost:15,        baseInc:0.4,   unlock:0},
+  {id:"trippi",     name:"Trippi Troppi",       emoji:"🦐",  rar:"common",    baseCost:120,       baseInc:3,     unlock:0},
+  {id:"brrbrr",     name:"Brr Brr Patapim",     emoji:"🐒",  rar:"rare",      baseCost:1100,      baseInc:24,    unlock:200},
+  {id:"chimpanzini",name:"Chimpanzini Bananini",emoji:"🐵",  rar:"rare",      baseCost:9500,      baseInc:180,   unlock:2000},
+  {id:"tungtung",   name:"Tung Tung Sahur",     emoji:"🪵",  rar:"epic",      baseCost:78000,     baseInc:1300,  unlock:18000},
+  {id:"lirili",     name:"Lirilì Larilà",       emoji:"🌵",  rar:"epic",      baseCost:620000,    baseInc:9500,  unlock:140000},
+  {id:"cappuccino", name:"Cappuccino Assassino",emoji:"☕",  rar:"legendary", baseCost:5_000_000, baseInc:70000, unlock:1_100_000},
+  {id:"ballerina",  name:"Ballerina Cappuccina",emoji:"🩰",  rar:"legendary", baseCost:40e6,      baseInc:520000,unlock:9e6},
+  {id:"bombardiro", name:"Bombardiro Crocodilo",emoji:"🐊",  rar:"mythic",    baseCost:320e6,     baseInc:4.2e6, unlock:70e6},
+  {id:"bombombini", name:"Bombombini Gusini",   emoji:"🦢",  rar:"mythic",    baseCost:2.6e9,     baseInc:34e6,  unlock:600e6},
+  {id:"glorbo",     name:"Glorbo Fruttodrillo", emoji:"🐉",  rar:"secret",    baseCost:22e9,      baseInc:290e6, unlock:5e9},
+];
+
+const UPGRADES = [
+  {id:"tap",   icon:"👆", name:"Stronger Taps",    desc:"+1 cash per tap (×current clout)", baseCost:50,     growth:1.6,  max:200},
+  {id:"mult",  icon:"📈", name:"Global Multiplier", desc:"+10% to ALL cash/sec",            baseCost:1000,   growth:2.1,  max:100},
+  {id:"crit",  icon:"💥", name:"Crit Taps",         desc:"+4% chance for a 10× tap",        baseCost:5000,   growth:2.4,  max:20},
+  {id:"steal", icon:"🥷", name:"Master Thief",      desc:"+25% steal rewards & more raids", baseCost:25000,  growth:2.6,  max:25},
+  {id:"offline",icon:"🌙",name:"Sleep Earnings",    desc:"+10% offline income (max 12h)",   baseCost:8000,   growth:2.2,  max:30},
+];
+
+/* ---------- STATE ---------- */
+const DEFAULT = {
+  cash:0, totalEarned:0, taps:0, steals:0, clout:0,
+  owned:{}, up:{}, lastSeen:Date.now(), activeTapper:"tralalero",
+};
+let S = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem("brainrot_tycoon_v1");
+    if(!raw) return structuredClone(DEFAULT);
+    const d = JSON.parse(raw);
+    return Object.assign(structuredClone(DEFAULT), d);
+  }catch(e){ return structuredClone(DEFAULT); }
+}
+function save(){ S.lastSeen=Date.now(); localStorage.setItem("brainrot_tycoon_v1", JSON.stringify(S)); }
+
+/* ---------- HELPERS ---------- */
+const $ = s => document.querySelector(s);
+const byId = id => document.getElementById(id);
+const UNITS = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+function fmt(n){
+  if(n < 1000) return (n%1===0? n : n.toFixed(n<10?1:0)).toString();
+  let u=0; while(n>=1000 && u<UNITS.length-1){ n/=1000; u++; }
+  return n.toFixed(n<10?2:n<100?1:0) + UNITS[u];
+}
+function cloutMult(){ return 1 + S.clout*0.10; } // each clout = +10%
+function globalMult(){ return (1 + (S.up.mult||0)*0.10) * cloutMult(); }
+function tapPower(){ return (1 + (S.up.tap||0)) * cloutMult(); }
+function critChance(){ return (S.up.crit||0)*0.04; }
+function stealBonus(){ return 1 + (S.up.steal||0)*0.25; }
+
+function costOf(item){
+  const owned = S.owned[item.id]||0;
+  return Math.floor(item.baseCost * Math.pow(1.15, owned));
+}
+function upCostOf(u){
+  const lvl = S.up[u.id]||0;
+  return Math.floor(u.baseCost * Math.pow(u.growth, lvl));
+}
+function incomeOf(item){
+  const owned = S.owned[item.id]||0;
+  return owned * item.baseInc;
+}
+function totalRate(){
+  let r=0; for(const it of ROSTER) r += incomeOf(it);
+  return r * globalMult();
+}
+function isUnlocked(item){ return S.totalEarned >= item.unlock; }
+
+/* ---------- EARN ---------- */
+function addCash(n){ S.cash += n; S.totalEarned += n; }
+
+/* ---------- RENDER ---------- */
+function setVar(el,name,val){ el.style.setProperty(name,`var(${val})`); }
+
+function renderCash(){
+  byId("cash").textContent = fmt(S.cash);
+  byId("rate").textContent = fmt(totalRate());
+}
+
+function renderShop(){
+  const g = byId("shopGrid"); g.innerHTML="";
+  for(const it of ROSTER){
+    const unlocked = isUnlocked(it);
+    const cost = costOf(it);
+    const owned = S.owned[it.id]||0;
+    const afford = S.cash >= cost && unlocked;
+    const card = document.createElement("div");
+    card.className = "card" + (afford?" affordable":"") + (unlocked?"":" locked");
+    card.style.setProperty("--rar", `var(${RAR[it.rar].color})`);
+    card.innerHTML = `
+      <div class="topline">
+        <span class="rar-tag">${RAR[it.rar].name}</span>
+        <span class="owned-pill">×${owned}</span>
+      </div>
+      <div class="face">${it.emoji}</div>
+      <div class="nm">${it.name}</div>
+      <div class="inc">+${fmt(it.baseInc*globalMult())}/s each</div>
+      <button class="buybtn" ${afford?"":"disabled"}>${unlocked?("Buy · 💰"+fmt(cost)):"🔒"}</button>
+      ${unlocked?"":`<div class="lockmsg">🔒<span>Earn ${fmt(it.unlock)} total</span></div>`}
+    `;
+    if(afford){
+      card.querySelector(".buybtn").addEventListener("click", (e)=>{ buy(it.id); spawnFloat(e.clientX,e.clientY,"+"+it.emoji,"var(--accent)"); });
+    }
+    g.appendChild(card);
+  }
+}
+
+function renderCollection(){
+  const g = byId("collGrid"); g.innerHTML="";
+  let have=0;
+  for(const it of ROSTER){
+    const owned = S.owned[it.id]||0;
+    if(owned>0) have++;
+    const card = document.createElement("div");
+    card.className = "card" + (owned>0?"":" locked");
+    card.style.setProperty("--rar", `var(${RAR[it.rar].color})`);
+    const active = S.activeTapper===it.id;
+    card.innerHTML = `
+      <div class="topline">
+        <span class="rar-tag">${RAR[it.rar].name}</span>
+        <span class="owned-pill">×${owned}</span>
+      </div>
+      <div class="face">${owned>0?it.emoji:"❔"}</div>
+      <div class="nm">${owned>0?it.name:"???"}</div>
+      <div class="inc">${owned>0? "earns "+fmt(incomeOf(it)*globalMult())+"/s":"not collected"}</div>
+      ${owned>0?`<button class="buybtn" ${active?"disabled":""} style="${active?'background:var(--panel-2);color:var(--green)':''}">${active?"⭐ Tapping":"Set as Tapper"}</button>`:""}
+    `;
+    if(owned>0 && !active){
+      card.querySelector(".buybtn").addEventListener("click", ()=>{ S.activeTapper=it.id; refreshTapper(); renderCollection(); toast("info",it.emoji+" is now your tapper!"); });
+    }
+    g.appendChild(card);
+  }
+  byId("collCount").textContent = `${have} / ${ROSTER.length}`;
+}
+
+function renderUpgrades(){
+  const list = byId("upList"); list.innerHTML="";
+  let anyAfford=false;
+  for(const u of UPGRADES){
+    const lvl = S.up[u.id]||0;
+    const maxed = lvl>=u.max;
+    const cost = upCostOf(u);
+    const afford = !maxed && S.cash>=cost;
+    if(afford) anyAfford=true;
+    const row = document.createElement("div");
+    row.className="uprow";
+    row.innerHTML = `
+      <div class="ui">${u.icon}</div>
+      <div class="um">
+        <div class="ut">${u.name}</div>
+        <div class="ud">${u.desc}</div>
+        <div class="ulvl">Lvl ${lvl}${maxed?" · MAX":""}</div>
+      </div>
+      <button class="buybtn" style="width:auto;margin-top:0;white-space:nowrap" ${afford?"":"disabled"}>
+        ${maxed?"MAX":"💰 "+fmt(cost)}
+      </button>
+    `;
+    if(afford) row.querySelector(".buybtn").addEventListener("click", ()=>buyUpgrade(u.id));
+    list.appendChild(row);
+  }
+  const badge = byId("upBadge");
+  if(anyAfford){ badge.style.display="flex"; badge.textContent="!"; } else badge.style.display="none";
+}
+
+function renderRebirth(){
+  const gain = cloutGain();
+  byId("rbGain").textContent = fmt(gain);
+  byId("rbCur").textContent = "+"+Math.round(S.clout*10)+"%";
+  byId("rbNeed").textContent = fmt(REBIRTH_REQ);
+  byId("rebirthBtn").disabled = gain<1;
+  byId("rebirthBtn").style.opacity = gain<1? 0.4:1;
+  byId("stClout").textContent = fmt(S.clout);
+  byId("stTotal").textContent = fmt(S.totalEarned);
+  byId("stTaps").textContent = fmt(S.taps);
+  byId("stSteals").textContent = fmt(S.steals);
+}
+
+const REBIRTH_REQ = 25000;
+function cloutGain(){
+  if(S.totalEarned < REBIRTH_REQ) return 0;
+  // sqrt scaling so it stays meaningful but not explosive
+  return Math.floor(Math.sqrt(S.totalEarned / REBIRTH_REQ));
+}
+
+function renderAll(){ renderCash(); renderShop(); renderCollection(); renderUpgrades(); renderRebirth(); }
+
+/* ---------- ACTIONS ---------- */
+function buy(id){
+  const it = ROSTER.find(x=>x.id===id);
+  const cost = costOf(it);
+  if(S.cash < cost || !isUnlocked(it)) return;
+  S.cash -= cost;
+  S.owned[id] = (S.owned[id]||0)+1;
+  if(S.owned[id]===1) toast("good", it.emoji+" "+it.name+" collected!");
+  renderShop(); renderCash(); renderCollection();
+}
+function buyUpgrade(id){
+  const u = UPGRADES.find(x=>x.id===id);
+  const cost = upCostOf(u);
+  if(S.cash<cost) return;
+  S.cash -= cost;
+  S.up[id] = (S.up[id]||0)+1;
+  renderUpgrades(); renderCash();
+  if(id==="tap") refreshTapper();
+}
+
+function refreshTapper(){
+  const it = ROSTER.find(x=>x.id===S.activeTapper) || ROSTER[0];
+  byId("tapEmoji").textContent = it.emoji;
+  byId("tapperName").textContent = it.name;
+}
+
+/* ---------- TAP ---------- */
+byId("tapbtn").addEventListener("pointerdown", (e)=>{
+  let gain = tapPower();
+  let crit = Math.random() < critChance();
+  if(crit) gain *= 10;
+  addCash(gain);
+  S.taps++;
+  renderCash();
+  spawnFloat(e.clientX, e.clientY-30, (crit?"💥 ":"+")+fmt(gain), crit?"var(--accent-2)":"var(--gold)");
+  maybeQuickRefresh();
+});
+
+function maybeQuickRefresh(){
+  // lightweight: only refresh shop affordability occasionally to keep taps snappy
+  if(S.taps % 5 === 0){ renderShop(); renderUpgrades(); renderRebirth(); }
+}
+
+/* ---------- FLOATING NUMBERS ---------- */
+function spawnFloat(x,y,text,color){
+  const f = document.createElement("div");
+  f.className="float"; f.textContent=text; f.style.left=x+"px"; f.style.top=y+"px";
+  if(color) f.style.color=color;
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(), 900);
+}
+
+/* ---------- TOAST ---------- */
+function toast(type,msg){
+  const t=document.createElement("div");
+  t.className="toast "+type; t.textContent=msg;
+  byId("toastWrap").appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .3s"; setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+/* ---------- TABS ---------- */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    tab.classList.add("active");
+    byId("panel-"+tab.dataset.tab).classList.add("active");
+    if(tab.dataset.tab==="shop") renderShop();
+    if(tab.dataset.tab==="collection") renderCollection();
+    if(tab.dataset.tab==="upgrades") renderUpgrades();
+    if(tab.dataset.tab==="rebirth") renderRebirth();
+  });
+});
+
+/* ---------- REBIRTH ---------- */
+byId("rebirthBtn").addEventListener("click", ()=>{
+  const gain = cloutGain();
+  if(gain<1){ toast("bad","Earn "+fmt(REBIRTH_REQ)+" total first!"); return; }
+  if(!confirm(`Go viral and reset for +${fmt(gain)} 🔥 Clout?\n(Permanent +${gain*10}% earnings)`)) return;
+  S.clout += gain;
+  S.cash = 0; S.totalEarned = 0; S.owned = {}; S.up = {};
+  S.activeTapper = "tralalero";
+  refreshTapper();
+  toast("good","🌀 You went VIRAL! +"+fmt(gain)+" 🔥 Clout");
+  renderAll(); save();
+});
+
+/* ---------- SAVE / RESET ---------- */
+byId("saveBtn").addEventListener("click", ()=>{ save(); toast("info","💾 Game saved!"); });
+byId("resetBtn").addEventListener("click", ()=>{
+  if(!confirm("HARD RESET — wipe everything including 🔥 Clout? This can't be undone.")) return;
+  S = structuredClone(DEFAULT); refreshTapper(); renderAll(); save();
+  toast("bad","Everything wiped. Fresh start!");
+});
+
+/* ---------- STEAL MINIGAME ---------- */
+let stealState = null;
+let stealAvailable = false;
+
+function offerSteal(){
+  if(stealState) return;
+  stealAvailable = true;
+  byId("stealFab").classList.add("show");
+  // auto-hide opportunity after a while
+  clearTimeout(offerSteal._t);
+  offerSteal._t = setTimeout(()=>{ stealAvailable=false; byId("stealFab").classList.remove("show"); }, 12000);
+}
+
+byId("stealFab").addEventListener("click", startSteal);
+
+function startSteal(){
+  if(!stealAvailable || stealState) return;
+  stealAvailable=false; byId("stealFab").classList.remove("show");
+  const victim = ROSTER[Math.floor(Math.random()*Math.min(ROSTER.length, 6 + (S.up.steal||0)))];
+  const pot = Math.max(50, totalRate()*30 + S.cash*0.15) * stealBonus();
+  const needTaps = 15 + Math.floor(Math.random()*10);
+  stealState = { taps:0, needTaps, pot, victim, timeLeft:3.0, getaway:false };
+  byId("stealTitle").textContent = "🥷 RAID!";
+  byId("stealVictim").textContent = victim.emoji;
+  byId("stealDesc").textContent = `A rival's ${victim.name} is loaded! Tap ${needTaps}× in 3 seconds to swipe 💰${fmt(pot)}!`;
+  byId("stealFill").style.width="0%";
+  byId("stealTap").textContent = "TAP TO STEAL! 💰";
+  byId("stealTimer").textContent = "3.0s";
+  byId("stealOverlay").classList.add("show");
+  stealState.timer = setInterval(()=>{
+    stealState.timeLeft -= 0.1;
+    byId("stealTimer").textContent = Math.max(0,stealState.timeLeft).toFixed(1)+"s";
+    if(stealState.timeLeft<=0) endSteal(false);
+  },100);
+}
+
+byId("stealTap").addEventListener("click",(e)=>{
+  if(!stealState) return;
+  stealState.taps++;
+  const pct = Math.min(100, stealState.taps/stealState.needTaps*100);
+  byId("stealFill").style.width = pct+"%";
+  spawnFloat(e.clientX, e.clientY-20, "💰", "var(--green)");
+  if(stealState.taps >= stealState.needTaps) endSteal(true);
+});
+
+function endSteal(success){
+  if(!stealState) return;
+  clearInterval(stealState.timer);
+  byId("stealOverlay").classList.remove("show");
+  if(success){
+    addCash(stealState.pot);
+    S.steals++;
+    toast("good","🥷 STOLE 💰"+fmt(stealState.pot)+" from "+stealState.victim.name+"!");
+  } else {
+    // rival escapes; small chance they nick a little from you
+    const loss = Math.min(S.cash*0.05, totalRate()*5);
+    if(loss>0){ S.cash-=loss; toast("bad",stealState.victim.emoji+" got away & swiped 💰"+fmt(loss)+"!"); }
+    else toast("bad",stealState.victim.emoji+" escaped! Too slow.");
+  }
+  stealState=null;
+  renderCash(); renderRebirth();
+  scheduleNextSteal();
+}
+
+function scheduleNextSteal(){
+  const base = 45000; // ~45s
+  const reduce = (S.up.steal||0)*2500;
+  const delay = Math.max(15000, base - reduce) + Math.random()*20000;
+  clearTimeout(scheduleNextSteal._t);
+  scheduleNextSteal._t = setTimeout(offerSteal, delay);
+}
+
+/* ---------- GAME LOOP ---------- */
+let lastTick = Date.now();
+function tick(){
+  const now = Date.now();
+  const dt = (now-lastTick)/1000;
+  lastTick = now;
+  const earn = totalRate()*dt;
+  if(earn>0) addCash(earn);
+  renderCash();
+}
+setInterval(tick, 100);
+setInterval(()=>{ renderShop(); renderUpgrades(); renderRebirth(); }, 1500);
+setInterval(save, 15000);
+
+/* ---------- OFFLINE EARNINGS ---------- */
+function applyOffline(){
+  const away = (Date.now() - (S.lastSeen||Date.now()))/1000;
+  if(away < 30) return;
+  const capped = Math.min(away, 12*3600); // 12h cap
+  const offPct = 0.10 + (S.up.offline||0)*0.10; // 10% base + 10%/lvl
+  const earned = totalRate()*capped*Math.min(1, offPct);
+  if(earned>1){
+    addCash(earned);
+    setTimeout(()=>toast("good",`🌙 While away (${fmtTime(capped)}) you earned 💰${fmt(earned)}!`), 600);
+  }
+}
+function fmtTime(s){
+  if(s<3600) return Math.floor(s/60)+"m";
+  return Math.floor(s/3600)+"h "+Math.floor((s%3600)/60)+"m";
+}
+
+/* ---------- BOOT ---------- */
+refreshTapper();
+applyOffline();
+renderAll();
+scheduleNextSteal();
+setTimeout(offerSteal, 8000); // first steal chance shortly after load
+window.addEventListener("beforeunload", save);
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden) save(); });
+
+// Give brand-new players a tiny starting nudge
+if(S.totalEarned===0 && Object.keys(S.owned).length===0){
+  setTimeout(()=>toast("info","👆 Tap the big brainrot to earn your first 💰, then buy one in the Shop!"), 800);
+}
+</script>
+</body>
+</html>
