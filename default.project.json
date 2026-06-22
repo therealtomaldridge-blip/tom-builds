@@ -1,0 +1,23 @@
+{
+    "name": "TagYoureToast",
+    "tree": {
+        "$className": "DataModel",
+
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "GameManager": {
+                "$path": "src/server/GameManager.server.lua"
+            }
+        },
+
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "GameUI": {
+                    "$path": "src/client/GameUI.client.lua"
+                }
+            }
+        }
+    }
+}
