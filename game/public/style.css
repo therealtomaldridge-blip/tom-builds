@@ -1,0 +1,89 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0b0a12; --ink:#f4f0e6; --ink-2:#b9b2c9; --ink-3:#776f8c;
+  --gold:#ffd166; --gold-2:#e0a106; --green:#06d6a0; --red:#ff5a5f; --cyan:#4cc9f0;
+  --panel:rgba(255,255,255,0.06); --panel-2:rgba(255,255,255,0.1); --border:rgba(255,209,102,0.25);
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+  user-select:none;-webkit-user-select:none;touch-action:none}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;background:linear-gradient(#1a1530,#0b0a12)}
+
+.hidden{display:none !important}
+
+/* SCREENS (lobby / results) */
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:20px;background:radial-gradient(circle at 50% -10%,#2a1c4a,#0b0a12 60%)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:26px 22px;width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);text-align:center}
+.logo{font-size:clamp(2rem,9vw,3rem);font-weight:900;letter-spacing:-0.02em;line-height:1;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--red));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 14px rgba(255,209,102,0.4))}
+.logo span{-webkit-text-fill-color:initial}
+.sub{color:var(--ink-2);font-size:0.9rem;margin:8px 0 20px;line-height:1.45}
+.sub b{color:var(--gold)}
+
+input{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(0,0,0,0.3);color:var(--ink);font-size:1rem;font-weight:600;text-align:center;margin-bottom:10px;outline:none}
+input:focus{border-color:var(--gold)}
+#codeInput{text-transform:uppercase;letter-spacing:0.2em;font-weight:900}
+
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:0.95rem;cursor:pointer;
+  background:var(--panel-2);color:var(--ink);transition:transform .06s,filter .15s,opacity .15s}
+.btn:active{transform:scale(0.97)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#241a00;
+  box-shadow:0 8px 24px rgba(255,209,102,0.35)}
+.btn.tiny{width:auto;padding:6px 10px;font-size:0.75rem;display:inline-block}
+.or{color:var(--ink-3);font-size:0.8rem;font-weight:700;margin:14px 0 10px}
+.joinrow{display:flex;gap:8px}
+.joinrow input{margin-bottom:0;flex:1}
+.joinrow .btn{width:auto;padding:13px 20px}
+.err{color:var(--red);font-size:0.82rem;font-weight:700;margin-top:10px;min-height:1em}
+
+.roomcode{font-size:1.1rem;font-weight:700;color:var(--ink-2);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.roomcode b{font-size:1.6rem;font-weight:900;color:var(--gold);letter-spacing:0.15em}
+.players{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.prow{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;font-weight:700;font-size:0.95rem}
+.dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.prow .tag{margin-left:auto;font-size:0.7rem;color:var(--gold);font-weight:800}
+.wait{color:var(--ink-3);font-size:0.85rem;font-weight:700;margin-top:6px}
+
+.howto{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:var(--ink-3);font-size:0.76rem;padding:0 16px;z-index:21}
+.howto b{color:var(--ink-2)} .howto .k{background:var(--panel-2);border-radius:5px;padding:1px 6px;font-weight:800;color:var(--ink)}
+
+/* HUD */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none}
+.hud-top{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.hud-pill{background:rgba(11,10,18,0.7);border:1px solid var(--border);border-radius:50px;padding:8px 16px;
+  font-weight:900;font-size:0.95rem;backdrop-filter:blur(6px)}
+.hud-pill.time{color:var(--cyan)} .hud-pill.time.low{color:var(--red);animation:pulse .5s infinite}
+.hud-pill.bag{color:var(--gold)} .hud-pill.bank{color:var(--green)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.hud-scores{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.srow{background:rgba(11,10,18,0.6);border-radius:8px;padding:4px 10px;font-size:0.8rem;font-weight:800;display:flex;gap:8px;align-items:center}
+.srow .dot{width:10px;height:10px}
+.hint{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(11,10,18,0.8);
+  border:1px solid var(--border);border-radius:50px;padding:8px 18px;font-weight:800;font-size:0.9rem;
+  opacity:0;transition:opacity .25s;white-space:nowrap}
+.hint.show{opacity:1}
+
+/* mobile controls */
+#touch{position:fixed;inset:0;z-index:15;pointer-events:none}
+.stick{position:absolute;left:24px;bottom:30px;width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,0.07);border:2px solid var(--border);pointer-events:auto}
+.nub{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,209,102,0.6)}
+.tbtns{position:absolute;right:20px;bottom:30px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.tbtn{width:64px;height:64px;border-radius:50%;border:2px solid var(--border);background:rgba(255,255,255,0.1);
+  color:var(--ink);font-size:1.5rem;pointer-events:auto;cursor:pointer}
+.tbtn:active{background:rgba(255,209,102,0.3)}
+
+/* results board */
+.board{display:flex;flex-direction:column;gap:8px;margin:8px 0 18px}
+.brow{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:11px 15px;font-weight:800}
+.brow .rank{font-size:1.1rem;width:26px}
+.brow .total{margin-left:auto;color:var(--gold);font-size:1.1rem}
+.brow .rd{color:var(--green);font-size:0.78rem;font-weight:700}
+.brow.win{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}

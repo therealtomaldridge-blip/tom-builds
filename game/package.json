@@ -1,0 +1,14 @@
+{
+  "name": "greed-game",
+  "version": "1.0.0",
+  "description": "GREED — a 3D multiplayer co-op greed-under-pressure party game for the browser.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
